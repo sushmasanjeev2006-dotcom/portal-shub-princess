@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Princess Portal — For Shub</title>
+<link rel="stylesheet" href="style.css" />
+<!-- QR lib + jspdf (for booklet) from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="sparkles" aria-hidden="true"></div>
+
+  <!-- Welcome / Overlay -->
+  <div id="overlay" class="overlay">
+    <div class="enter-card" role="dialog" aria-labelledby="welcomeTitle">
+      <!-- mascot inline SVG (boy chibi style) -->
+      <div class="mascot-wrap" aria-hidden="true">
+        <svg class="mascot" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ffd6f3"/><stop offset="1" stop-color="#ff9adf"/></linearGradient></defs>
+          <ellipse cx="100" cy="110" rx="70" ry="60" fill="url(#g1)" stroke="#ff7bd8" stroke-width="3"/>
+          <circle cx="80" cy="95" r="8" fill="#fff"/><circle cx="120" cy="95" r="8" fill="#fff"/>
+          <circle cx="80" cy="94" r="4" fill="#4a103a"/><circle cx="120" cy="94" r="4" fill="#4a103a"/>
+          <path d="M85 140 Q100 155 115 140" stroke="#ff4fb6" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <ellipse cx="60" cy="120" rx="8" ry="5" fill="#ffd1ea" opacity="0.9"/><ellipse cx="140" cy="120" rx="8" ry="5" fill="#ffd1ea" opacity="0.9"/>
+        </svg>
+      </div>
+
+      <h1 id="welcomeTitle">🌸 Happy Princess Day — Shub!</h1>
+      <p class="lead">A kawaii, glittery portal for a gym-loving anime friend. Tap Enter to begin your Princess Friendship initiation.</p>
+
+      <div class="enter-actions">
+        <button id="enterBtn" class="btn primary">Enter the Portal</button>
+        <button id="sfxBtn" class="btn ghost">SFX: On</button>
+      </div>
+
+      <div class="qr-invite">
+        <div id="miniQR"></div>
+        <small>Scan the QR to open this portal on another device</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main stage -->
+  <main class="stage" id="stage" aria-live="polite">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="crown" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M4 48h56v4H4z" fill="#ffd1ea"/><path d="M8 48l8-24 10 14 10-22 10 14 8-8 -6 26H8z" fill="#ffb3e6" stroke="#ff7bd8" stroke-width="1"/></svg>
+        <span class="brand-title">Princess Portal</span>
+      </div>
+      <div class="player">Player: <strong id="playerName">Shub</strong></div>
+    </header>
+
+    <!-- Portal card with mascot and quiz area -->
+    <section class="card" id="portalCard">
+      <div class="left">
+        <!-- larger mascot -->
+        <svg class="mascot-large" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#ffd6f3"/><stop offset="1" stop-color="#ff9adf"/></linearGradient></defs>
+          <ellipse cx="100" cy="110" rx="70" ry="60" fill="url(#g2)" stroke="#ff7bd8" stroke-width="3"/>
+          <circle cx="80" cy="95" r="8" fill="#fff"/><circle cx="120" cy="95" r="8" fill="#fff"/>
+          <circle cx="80" cy="94" r="4" fill="#4a103a"/><circle cx="120" cy="94" r="4" fill="#4a103a"/>
+          <path d="M85 140 Q100 155 115 140" stroke="#ff4fb6" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="right">
+        <h2 id="cardTitle">Welcome, Shub ✨</h2>
+        <p class="muted">Complete the quiz to receive your royal certificate — escape is not allowed!</p>
+
+        <!-- Quiz container (rendered by JS) -->
+        <div id="quizContainer" class="quizContainer" aria-live="polite"></div>
+
+        <!-- controls -->
+        <div class="controls" id="controls" aria-hidden="true">
+          <button class="btn ghost" id="prevBtn">Back</button>
+          <div class="progressWrap" aria-hidden="true">
+            <div class="progress"><i id="progressBar"></i></div>
+            <div class="progressText" id="progressText"></div>
+          </div>
+          <button class="btn primary" id="nextBtn">Next</button>
+        </div>
+
+        <div class="extra-actions" id="extraActions" style="display:none">
+          <button id="downloadBooklet" class="btn ghost">Download Booklet (PDF)</button>
+          <button id="showQR" class="btn ghost">Show Page QR</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Result page -->
+    <section class="card hidden" id="resultCard">
+      <h2>Royal Outcome ✨</h2>
+      <div id="summary"></div>
+      <div class="centerRow">
+        <button class="btn primary" id="certBtn">Reveal Certificate</button>
+        <button class="btn ghost" id="retakeBtn">Retake Quiz</button>
+      </div>
+    </section>
+
+    <!-- Certificate -->
+    <section class="card hidden" id="certCard">
+      <h2>🎓 Certificate of Unescapable Friendship</h2>
+      <canvas id="certCanvas" width="1200" height="800" style="max-width:100%;border-radius:8px"></canvas>
+      <div class="centerRow">
+        <button class="btn primary" id="downloadCert">Download Certificate PNG</button>
+        <button class="btn ghost" id="backToHome">Back to Home</button>
+      </div>
+    </section>
+
+    <footer class="footer">Made with glitter, anime energy & gym gains 💖</footer>
+  </main>
+
+  <!-- QR modal -->
+  <div id="qrModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+    <div class="modalCard">
+      <h3 id="qrModalTitle">Portal QR</h3>
+      <div id="pageQR"></div>
+      <p class="muted">Scan this code to open the portal on your phone. Or long-press to save.</p>
+      <button class="btn ghost" id="closeQR">Close</button>
+    </div>
+  </div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
